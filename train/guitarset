@@ -1,0 +1,8 @@
+#!/bin/bash --login
+#$ -cwd
+#$ -l a100
+
+conda env list
+conda activate torch
+echo "Job is using $NGPUS GPU(s) with ID(s) $CUDA_VISIBLE_DEVICES and $NSLOTS CPU core(s)"
+python train.py --experiment_name guitarset --num_step 100000 --use_z --ckpt ../../ckpt/guitar/guitarset.pth 
