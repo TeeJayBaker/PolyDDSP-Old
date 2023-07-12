@@ -4,9 +4,7 @@ based on the implementation provided by sweetcocoa
 - Jongho Choi (sweetcocoa@snu.ac.kr, BS Student @ Seoul National Univ.)
 - Sungho Lee (dlfqhsdugod1106@gmail.com, BS Student @ Postech.)
 
-## Demo Page of sweetcocoa's implementation ##
-
-- [Link](https://sweetcocoa.github.io/ddsp-pytorch-samples/)
+Demo Page of sweetcocoa's implementation [Link](https://sweetcocoa.github.io/ddsp-pytorch-samples/)
 
 ## How to train with your own data
 
