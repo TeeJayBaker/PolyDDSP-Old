@@ -1,12 +1,14 @@
-# Pytorch version of DDSP
+# PolyDDSP : Polyphonic generalisation of the DDSP model
+
+based on the implementation provided by sweetcocoa
+- Jongho Choi (sweetcocoa@snu.ac.kr, BS Student @ Seoul National Univ.)
+- Sungho Lee (dlfqhsdugod1106@gmail.com, BS Student @ Postech.)
 
 # DDSP : Differentiable Digital Signal Processing
 
 > Original Authors : Jesse Engel, Lamtharn (Hanoi) Hantrakul, Chenjie Gu, Adam Roberts (Google)
 
-> This Repository is NOT an official implement of authors.
-
-## Demo Page ##
+## Demo Page of sweetcocoa's implementation ##
 
 - [Link](https://sweetcocoa.github.io/ddsp-pytorch-samples/)
 
@@ -15,7 +17,7 @@
 1. Clone this repository
 
 ```bash
-git clone https://github.com/sweetcocoa/ddsp-pytorch
+git clone https://github.com/TeeJayBaker/PolyDDSP
 ```
 
 2. Prepare your own audio data. (wav, mp3, flac.. )
@@ -56,12 +58,4 @@ python test.py\
 --wave_length 16000
 ```
 
-## Download pretrained weight file ###
-> [download](https://github.com/sweetcocoa/ddsp-pytorch/raw/models/weight.zip)
 
-## Contact ##
-
-- Jongho Choi (sweetcocoa@snu.ac.kr, BS Student @ Seoul National Univ.)
-- Sungho Lee (dlfqhsdugod1106@gmail.com, BS Student @ Postech.)
-
-> Equally contributed.
