@@ -21,7 +21,7 @@ git clone https://github.com/TeeJayBaker/PolyDDSP
 # example
 ffmpeg -y -loglevel fatal -i $input_file -ac 1 -ar 16000 $output_file
 ```
-4. Use [CREPE](https://github.com/marl/crepe) to precalculate the fundamental frequency of the audio.
+4. Use [CREPE](https://github.com/marl/crepe) to precalculate the fundamental frequency of the audio. (wrong, needs fixing)
 
 ```bash
 # example
