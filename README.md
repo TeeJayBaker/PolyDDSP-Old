@@ -52,4 +52,4 @@ python test.py\
 --wave_length 16000
 ```
 
-
+Join the Discord
