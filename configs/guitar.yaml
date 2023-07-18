@@ -14,6 +14,7 @@ lr_min: 1.0e-07
 lr_scheduler: multi
 max_voices: 10
 metric: mss
+mfcc_loss: false
 mlp_layers: 3
 mlp_units: 512
 n_fft: 2048
@@ -27,7 +28,7 @@ optimizer: radam
 resume: false
 sample_rate: 16000
 seed: 940513
-tensorboard_dir: ../tensorboard_log/
+tensorboard_dir: None
 test: ../data/guitar/test/
 train: ../data/guitar/train/
 use_reverb: true

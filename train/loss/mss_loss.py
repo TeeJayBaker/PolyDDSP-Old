@@ -9,6 +9,24 @@ import torchaudio
 import torch.nn.functional as F
 
 
+class MFCCLoss(nn.Module):
+    """
+    Mel Frequency Cepstral Coefficient Loss.
+    """
+    
+    def __init__(self, n_mfcc=40):
+        super().__init__()
+        self.n_mfcc = n_mfcc
+        self.mfcc = torchaudio.transforms.MFCC(n_mfcc=self.n_mfcc)
+
+    def forward(self, x_pred, x_true):
+        M_true = self.mfcc(x_true)
+        M_pred = self.mfcc(x_pred)
+
+        loss = F.l1_loss(M_pred, M_true)
+        return loss
+
+
 class SSSLoss(nn.Module):
     """
     Single-scale Spectral Loss. 
@@ -46,9 +64,13 @@ class MSSLoss(nn.Module):
     output(loss) : torch.tensor(scalar)
     """
 
-    def __init__(self, n_ffts: list, alpha=1.0, overlap=0.75, eps=1e-7, use_reverb=True):
+    def __init__(self, n_ffts: list, alpha=1.0, overlap=0.75, eps=1e-7, use_reverb=True, use_mfcc=True):
         super().__init__()
-        self.losses = nn.ModuleList([SSSLoss(n_fft, alpha, overlap, eps) for n_fft in n_ffts])
+        if use_mfcc:
+            self.losses = nn.ModuleList([SSSLoss(n_fft, alpha, overlap, eps) for n_fft in n_ffts] + [MFCCLoss()])
+        else:
+            self.losses = nn.ModuleList([SSSLoss(n_fft, alpha, overlap, eps) for n_fft in n_ffts])
+        
         if use_reverb:
             self.signal_key = "audio_reverb"
         else:
