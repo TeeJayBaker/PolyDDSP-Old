@@ -11,6 +11,7 @@ import torch.optim as optim
 
 from trainer.trainer import Trainer
 from trainer.io import setup, set_seeds
+import wandb
 
 from dataset.audiodata import SupervisedAudioData, AudioData
 from network.autoencoder.autoencoder import AutoEncoder
@@ -23,7 +24,7 @@ from optimizer.radam import RAdam
 $ python train.py --batch_size 64 --lr 0.01 --use_reverb
 """
 
-config = setup(default_config="../configs/violin.yaml")
+config = setup(default_config="../configs/guitar.yaml")
 # config = setup(pdb_on_error=True, trace=False, autolog=False, default_config=dict(
 #     # general config
 #     ckpt="../../ddsp_ckpt/violin/200131.pth",  # checkpoint
@@ -71,6 +72,8 @@ config = setup(default_config="../configs/violin.yaml")
 #     bidirectional=False,
 #     ))
 
+wandb.init(project="PolyDDSP", config=config)
+
 print(OmegaConf.create(config.__dict__))
 set_seeds(config.seed)
 Trainer.set_experiment_name(config.experiment_name)
@@ -79,7 +82,9 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "mps" if torch.
 
 net = AutoEncoder(config).to(device)
 
-loss = MSSLoss([2048, 1024, 512, 256], use_reverb=config.use_reverb).to(device)
+wandb.watch(net, log_freq=1000)
+
+loss = MSSLoss([2048, 1024, 512, 256], use_reverb=config.use_reverb, use_mfcc=config.mfcc_loss).to(device)
 
 # Define evaluation metrics
 if config.metric == "mss":
@@ -239,6 +244,15 @@ def validation_callback():
             trainer.config["step"],
             sample_rate=config.sample_rate,
         )
+        if config.use_reverb:
+            wandb.log({f"{phase}_audio": [wandb.Audio(original_audio.cpu().detach().numpy(), sample_rate=16000, caption="original"),
+                                          wandb.Audio(reconed_audio.cpu().detach().numpy(), sample_rate=16000, caption="reverb"),
+                                          wandb.Audio(reconed_audio_dereverb.cpu().detach().numpy(), sample_rate=16000, caption="synth")]}, commit=False)
+        else:
+            wandb.log({f"{phase}_audio": [wandb.Audio(original_audio.cpu().detach().numpy(), sample_rate=16000, caption="original"),
+                                          wandb.Audio(reconed_audio_dereverb.cpu().detach().numpy(), sample_rate=16000, caption="synth")]}, commit=False)
+
+        
 
     tensorboard_audio(train_dataloader, phase="train")
     tensorboard_audio(valid_dataloader, phase="valid")

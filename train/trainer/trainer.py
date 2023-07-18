@@ -9,6 +9,7 @@ from time import time
 from tensorboardX.writer import SummaryWriter
 from datetime import datetime
 from collections import defaultdict
+import wandb
 
 import os
 import json
@@ -282,6 +283,8 @@ class Trainer:
                     self.optimizer.param_groups[0]["lr"],
                     self.config[train_unit],
                 )
+
+            wandb.log(_loss)
 
             print_kwarg = [i_str]
             for phase in phases:
