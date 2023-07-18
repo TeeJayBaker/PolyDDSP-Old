@@ -23,6 +23,7 @@ n_harmonics: 101
 n_mels: 128
 n_mfcc: 30
 max_voices: 10
+mfcc_loss: false
 num_step: 100000
 num_workers: 4
 optimizer: radam
@@ -33,7 +34,7 @@ tensorboard_dir: None
 test: ../data/violin/test/
 train: ../data/violin/train/
 use_reverb: true
-use_z: false
+use_z: true
 valid_waveform_sec: 12
 validation_interval: 1000
 waveform_sec: 1

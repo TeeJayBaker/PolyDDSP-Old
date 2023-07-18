@@ -27,7 +27,7 @@ parser.add_argument("--config", default=".yaml")
 parser.add_argument("--wave_length", default=16000)
 args = parser.parse_args()
 
-y, sr = torchaudio.load(args.input, num_frames=None if args.wave_length == 0 else args.wave_length)
+y, sr = torchaudio.load(args.input, num_frames=None if args.wave_length == 0 else int(args.wave_length))
 
 config = OmegaConf.load(args.config)
 if sr != config.sample_rate:

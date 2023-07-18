@@ -23,6 +23,7 @@ from optimizer.radam import RAdam
 $ python train.py --batch_size 64 --lr 0.01 --use_reverb
 """
 
+ckpt = "../../ckpt/violin/soloviolin.pth-100000"
 config = setup(default_config="../configs/guitar.yaml")
 # config = setup(pdb_on_error=True, trace=False, autolog=False, default_config=dict(
 #     # general config
@@ -80,6 +81,8 @@ device = torch.device(
     "cpu")
 
 net = AutoEncoder(config).to(device)
+net.load_state_dict(torch.load(ckpt))
+net.eval()
 
 loss = MSSLoss([2048, 1024, 512, 256], use_reverb=config.use_reverb).to(device)
 
@@ -188,9 +191,9 @@ else:
 # ---------------------------------------/>
 import pandas as pd
 
-test = train_dataset.__getitem__(0)
+test = train_dataset.__getitem__(1)
 
-torchaudio.save('test1.wav', test['audio'].unsqueeze(0), 16000)
+torchaudio.save('input.wav', test['audio'].unsqueeze(0), 16000)
 
 test['audio'] = test['audio'].unsqueeze(0).to(device)
 test['f0'] = test['f0'].unsqueeze(0).to(device)
@@ -211,14 +214,21 @@ test3 = decoder(test2)
 # # print(test3['H'].shape)
 
 harmonic_oscillator = net.harmonic_oscillator
+filtered_noise = net.filtered_noise
+reverb = net.reverb
 
-test4 = harmonic_oscillator(test3)
+harmonic = harmonic_oscillator(test3)
+noise = filtered_noise(test3)
 
-test4 = test4.to('cpu')
+audio = dict(harmonic=harmonic, noise=noise, audio_synth=harmonic + noise[:, : harmonic.shape[-1]])
+audio["audio_reverb"] = reverb(audio)
 
 # print(test4)
 
-torchaudio.save('test2.wav', test4, 16000)
+torchaudio.save('harmonic.wav', audio["harmonic"].cpu(), 16000)
+torchaudio.save('noise.wav', audio["noise"].cpu(), 16000)
+torchaudio.save('audio_synth.wav', audio["audio_synth"].cpu(), 16000)
+torchaudio.save('audio_reverb.wav', audio["audio_reverb"].cpu(), 16000)
 
 # filtered_noise = net.filtered_noise
 

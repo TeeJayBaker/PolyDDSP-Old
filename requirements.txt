@@ -1,9 +1,0 @@
-numpy
-pandas
-tqdm
-tensorboardX
-easydict
-omegaconf
-#torch
-#torchaudio
-#torchvision

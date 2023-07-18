@@ -164,12 +164,15 @@ class Decoder(nn.Module):
 
         # a = torch.sigmoid(amplitude[..., 0])
         c = F.softmax(amplitude[..., 1:], dim=-1)
+        c = c[:,0,...].unsqueeze(1).repeat(1,num_voices,1,1)
 
         H = self.dense_filter(latent)
         H = Decoder.modified_sigmoid(H)
 
-        H = H.mean(dim = 1,keepdim = False)
-        a = a.mean(dim = 1,keepdim = False)
+        #H = H.mean(dim = 1,keepdim = False)
+        #a = a.mean(dim = 1,keepdim = False)
+        H = H[:,0,...]
+        a = a[:,0,...]
         c = c.permute(0, 1, 3, 2)  # to match the shape of harmonic oscillator's input.
 
         return dict(f0=batch["f0"], v=batch["velocity"], a=a, c=c, H=H)
