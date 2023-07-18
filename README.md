@@ -1,21 +1,17 @@
-# Pytorch version of DDSP
+# PolyDDSP : Polyphonic generalisation of the DDSP model
 
-# DDSP : Differentiable Digital Signal Processing
+based on the implementation provided by sweetcocoa
+- Jongho Choi (sweetcocoa@snu.ac.kr, BS Student @ Seoul National Univ.)
+- Sungho Lee (dlfqhsdugod1106@gmail.com, BS Student @ Postech.)
 
-> Original Authors : Jesse Engel, Lamtharn (Hanoi) Hantrakul, Chenjie Gu, Adam Roberts (Google)
-
-> This Repository is NOT an official implement of authors.
-
-## Demo Page ##
-
-- [Link](https://sweetcocoa.github.io/ddsp-pytorch-samples/)
+Demo Page of sweetcocoa's implementation [Link](https://sweetcocoa.github.io/ddsp-pytorch-samples/)
 
 ## How to train with your own data
 
 1. Clone this repository
 
 ```bash
-git clone https://github.com/sweetcocoa/ddsp-pytorch
+git clone https://github.com/TeeJayBaker/PolyDDSP
 ```
 
 2. Prepare your own audio data. (wav, mp3, flac.. )
@@ -25,7 +21,7 @@ git clone https://github.com/sweetcocoa/ddsp-pytorch
 # example
 ffmpeg -y -loglevel fatal -i $input_file -ac 1 -ar 16000 $output_file
 ```
-4. Use [CREPE](https://github.com/marl/crepe) to precalculate the fundamental frequency of the audio.
+4. Use [CREPE](https://github.com/marl/crepe) to precalculate the fundamental frequency of the audio. (wrong, needs fixing)
 
 ```bash
 # example
@@ -56,12 +52,4 @@ python test.py\
 --wave_length 16000
 ```
 
-## Download pretrained weight file ###
-> [download](https://github.com/sweetcocoa/ddsp-pytorch/raw/models/weight.zip)
-
-## Contact ##
-
-- Jongho Choi (sweetcocoa@snu.ac.kr, BS Student @ Seoul National Univ.)
-- Sungho Lee (dlfqhsdugod1106@gmail.com, BS Student @ Postech.)
-
-> Equally contributed.
+Join the Discord
