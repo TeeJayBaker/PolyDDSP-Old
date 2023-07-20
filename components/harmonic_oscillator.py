@@ -141,9 +141,11 @@ class PolyHarmonicOscillator(nn.Module):
         mask_filter = (framerate_f0_bank < self.sr / 2).float()
         antialiased_framerate_c_bank = framerate_c_bank * mask_filter
 
+        random_phases = torch.rand(batch, num_osc, 1).to(self.device)
+
         # Upsample frequency envelopes and build phase bank
         audiorate_f0_bank = self.framerate_to_audiorate(framerate_f0_bank)
-        audiorate_phase_bank = torch.cumsum(audiorate_f0_bank / self.sr, 2)
+        audiorate_phase_bank = torch.cumsum(audiorate_f0_bank / self.sr, 2) + random_phases
 
         # Upsample amplitude and velocity envelopes
         audiorate_a_bank = self.framerate_to_audiorate(antialiased_framerate_c_bank)
