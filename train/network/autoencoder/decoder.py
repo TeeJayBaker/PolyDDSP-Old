@@ -126,13 +126,22 @@ class Decoder(nn.Module):
 
     def forward(self, batch):
         f0 = batch["f0"].unsqueeze(-1)
-        velocity = batch["velocity"].unsqueeze(-1)
 
-        num_voices = f0.size(1)
-        loudness = batch['loudness'].unsqueeze(1).repeat(1,num_voices,1).unsqueeze(-1)
+        # Collapse polyphony channels into batch dimension
+        self.batch_size = f0.size(0)
+        self.max_voices = f0.size(1)
+
+        f0 = f0.reshape(f0.size(0)*f0.size(1), f0.size(2), f0.size(3))
+
+        velocity = batch["velocity"].unsqueeze(-1)
+        velocity = velocity.reshape(velocity.size(0)*velocity.size(1), velocity.size(2), velocity.size(3))
+        
+        loudness = batch['loudness'].unsqueeze(1).repeat(1,self.max_voices,1).unsqueeze(-1)
+        loudness = loudness.reshape(loudness.size(0)*loudness.size(1), loudness.size(2), loudness.size(3))
 
         if self.config.use_z:
-            z = batch["z"].unsqueeze(1).repeat(1,num_voices,1,1)
+            z = batch["z"].unsqueeze(1).repeat(1,self.max_voices,1,1)
+            z= z.reshape(z.size(0)*z.size(1), z.size(2), z.size(3))
             latent_z = self.mlp_z(z)
        
 
@@ -144,12 +153,6 @@ class Decoder(nn.Module):
             latent = torch.cat((latent_f0, latent_velocity, latent_z, latent_loudness), dim=-1)
         else:
             latent = torch.cat((latent_f0, latent_velocity, latent_loudness), dim=-1)
-
-        # Collapse polyphony channels into batch dimension
-        self.batch_size = latent.size(0)
-        self.max_voices = latent.size(1)
-
-        latent = latent.reshape(latent.size(0)*latent.size(1), latent.size(2), latent.size(3))
 
         latent, (h) = self.gru(latent)
         latent = self.mlp_gru(latent)
@@ -164,7 +167,7 @@ class Decoder(nn.Module):
 
         # a = torch.sigmoid(amplitude[..., 0])
         c = F.softmax(amplitude[..., 1:], dim=-1)
-        c = c[:,0,...].unsqueeze(1).repeat(1,num_voices,1,1)
+        c = c[:,0,...].unsqueeze(1).repeat(1,self.max_voices,1,1)
 
         H = self.dense_filter(latent)
         H = Decoder.modified_sigmoid(H)
