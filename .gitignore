@@ -12,3 +12,5 @@ train/trainer/__pycache__/*
 train/trainer/PinkModule/__pycache__/*
 train/guitarset
 train/soloviolin
+train/guitarset.csv
+train/soloviolin.csv
