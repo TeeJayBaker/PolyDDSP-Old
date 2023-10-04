@@ -4,6 +4,8 @@ import torchaudio
 from omegaconf import OmegaConf
 import sys, os, tqdm, glob
 import numpy as np
+import librosa.display
+import matplotlib.pyplot as plt
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 from torch.utils.data.dataloader import DataLoader
@@ -244,13 +246,38 @@ def validation_callback():
             trainer.config["step"],
             sample_rate=config.sample_rate,
         )
+
+        def comparison(n_fft, scale = 'log'):
+            spec = torchaudio.transforms.Spectrogram(n_fft=n_fft, hop_length=int(0.25*n_fft))
+            original_spec = spec(original_audio.cpu())
+            reconed_spec = spec(reconed_audio.cpu())
+
+            fig, ax = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
+            librosa.display.specshow(
+                librosa.amplitude_to_db(original_spec.detach().numpy(), ref=np.max),
+                y_axis=scale,
+                x_axis="time",
+                ax=ax[0],
+            )
+            librosa.display.specshow(
+                librosa.amplitude_to_db(reconed_spec.detach().numpy(), ref=np.max),
+                y_axis=scale,
+                x_axis="time",
+                ax=ax[1],
+            )
+
+            return fig
+
         if config.use_reverb:
             wandb.log({f"{phase}_audio": [wandb.Audio(original_audio.cpu().detach().numpy(), sample_rate=16000, caption="original"),
                                           wandb.Audio(reconed_audio.cpu().detach().numpy(), sample_rate=16000, caption="reverb"),
                                           wandb.Audio(reconed_audio_dereverb.cpu().detach().numpy(), sample_rate=16000, caption="synth")]}, commit=False)
         else:
             wandb.log({f"{phase}_audio": [wandb.Audio(original_audio.cpu().detach().numpy(), sample_rate=16000, caption="original"),
-                                          wandb.Audio(reconed_audio_dereverb.cpu().detach().numpy(), sample_rate=16000, caption="synth")]}, commit=False)
+                                          wandb.Audio(reconed_audio_dereverb.cpu().detach().numpy(), sample_rate=16000, caption="synth")]}, commit=False)    
+
+        wandb.log({f"{phase}_spec": [wandb.Image(comparison(2048), caption="2048 log"),
+                                     wandb.Image(comparison(2048, 'linear'), caption="2048 linear")]}, commit=False)
 
         
 
